@@ -7,9 +7,10 @@ const dotenv = require("dotenv");
 
 const connectDB = require("./config/db");
 
-// Routes
+// ================= Routes =================
 const authRoutes = require("./routes/authRoutes");
 const productRoutes = require("./routes/productRoutes");
+const cartRoutes = require("./routes/cartRoutes");
 
 dotenv.config();
 
@@ -30,13 +31,16 @@ app.get("/", (req, res) => {
   });
 });
 
-// ================= Routes =================
+// ================= API Routes =================
 
 // Authentication Routes
 app.use("/api/auth", authRoutes);
 
 // Product Routes
 app.use("/api/products", productRoutes);
+
+// Cart Routes
+app.use("/api/cart", cartRoutes);
 
 // ================= Server =================
 const PORT = process.env.PORT || 5000;
