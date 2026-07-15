@@ -4,17 +4,17 @@ const Cart = require("../models/Cart");
 
 const addToCart = async (req, res) => {
   try {
-    const { user, product, quantity } = req.body;
+    const { product, quantity } = req.body;
 
-    if (!user || !product) {
+    if (!product) {
       return res.status(400).json({
         success: false,
-        message: "User and Product are required",
+        message: "Product is required",
       });
     }
 
     const existingItem = await Cart.findOne({
-      user,
+      user: req.user.id,
       product,
     });
 
@@ -30,7 +30,7 @@ const addToCart = async (req, res) => {
     }
 
     const cart = await Cart.create({
-      user,
+      user: req.user.id,
       product,
       quantity: quantity || 1,
     });
@@ -49,12 +49,12 @@ const addToCart = async (req, res) => {
   }
 };
 
-// ================= GET USER CART =================
+// ================= GET MY CART =================
 
 const getCart = async (req, res) => {
   try {
     const cart = await Cart.find({
-      user: req.params.userId,
+      user: req.user.id,
     })
       .populate("user", "name email")
       .populate("product", "name price image category");
@@ -73,7 +73,7 @@ const getCart = async (req, res) => {
   }
 };
 
-// ================= UPDATE CART QUANTITY =================
+// ================= UPDATE CART =================
 
 const updateCartQuantity = async (req, res) => {
   try {
@@ -91,7 +91,7 @@ const updateCartQuantity = async (req, res) => {
     if (!cart) {
       return res.status(404).json({
         success: false,
-        message: "Cart item not found",
+        message: "Cart Item Not Found",
       });
     }
 
@@ -118,7 +118,7 @@ const removeCartItem = async (req, res) => {
     if (!cart) {
       return res.status(404).json({
         success: false,
-        message: "Cart item not found",
+        message: "Cart Item Not Found",
       });
     }
 
@@ -140,7 +140,7 @@ const removeCartItem = async (req, res) => {
 const clearCart = async (req, res) => {
   try {
     await Cart.deleteMany({
-      user: req.params.userId,
+      user: req.user.id,
     });
 
     res.status(200).json({
