@@ -35,7 +35,12 @@ const registerUser = async (req, res) => {
     res.status(201).json({
       success: true,
       message: "User Registered Successfully",
-      user,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
 
   } catch (error) {
@@ -81,6 +86,7 @@ const loginUser = async (req, res) => {
       {
         id: user._id,
         email: user.email,
+        role: user.role,
       },
       process.env.JWT_SECRET,
       {
@@ -96,6 +102,7 @@ const loginUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
       },
     });
 

@@ -12,14 +12,16 @@ const {
   getProductsByCategory,
 } = require("../controllers/productController");
 
-// Search Product
+const protect = require("../middleware/authMiddleware");
+const adminOnly = require("../middleware/adminMiddleware");
+
+// ================= PUBLIC ROUTES =================
+
+// Search Products
 router.get("/search", searchProducts);
 
 // Category Filter
 router.get("/category/:category", getProductsByCategory);
-
-// Add Product
-router.post("/", addProduct);
 
 // Get All Products
 router.get("/", getProducts);
@@ -27,10 +29,15 @@ router.get("/", getProducts);
 // Get Product By ID
 router.get("/:id", getProductById);
 
+// ================= ADMIN ROUTES =================
+
+// Add Product
+router.post("/", protect, adminOnly, addProduct);
+
 // Update Product
-router.put("/:id", updateProduct);
+router.put("/:id", protect, adminOnly, updateProduct);
 
 // Delete Product
-router.delete("/:id", deleteProduct);
+router.delete("/:id", protect, adminOnly, deleteProduct);
 
 module.exports = router;
