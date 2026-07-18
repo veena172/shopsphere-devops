@@ -11,6 +11,14 @@ import Profile from "../pages/Profile/Profile";
 import Checkout from "../pages/Checkout/Checkout";
 import NotFound from "../pages/NotFound/NotFound";
 import OrderSuccess from "../pages/OrderSuccess/OrderSuccess";
+import ManageProducts from "../pages/Admin/ManageProducts";
+
+// Admin Pages
+import AdminDashboard from "../pages/Admin/AdminDashboard";
+import AddProduct from "../pages/Admin/AddProduct";
+import EditProduct from "../pages/Admin/EditProduct";
+import Orders from "../pages/Admin/Orders";
+import Users from "../pages/Admin/Users";
 
 function AppRoutes() {
   const token = localStorage.getItem("token");
@@ -69,6 +77,20 @@ function AppRoutes() {
           )
         }
       />
+
+      {/* Admin Routes */}
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/add-product" element={<AddProduct />} />
+      <Route
+        path="/admin/edit-product/:id"
+        element={<EditProduct />}
+      />
+      <Route
+  path="/admin/products"
+  element={<ManageProducts />}
+/>
+      <Route path="/admin/orders" element={<Orders />} />
+      <Route path="/admin/users" element={<Users />} />
 
       {/* 404 */}
       <Route path="*" element={<NotFound />} />
