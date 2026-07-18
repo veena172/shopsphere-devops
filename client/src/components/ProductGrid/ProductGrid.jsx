@@ -5,7 +5,7 @@ function ProductGrid({ products }) {
     return (
       <div className="text-center py-20">
         <h2 className="text-3xl font-semibold text-gray-600">
-          No Products Found 😔
+          No Products Found 
         </h2>
 
         <p className="text-gray-500 mt-3">
@@ -19,7 +19,7 @@ function ProductGrid({ products }) {
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
       {products.map((product) => (
         <ProductCard
-          key={product.id}
+          key={product._id}
           product={product}
         />
       ))}

@@ -4,6 +4,9 @@ const Cart = require("../models/Cart");
 
 const addToCart = async (req, res) => {
   try {
+    console.log("BODY:", req.body);
+    console.log("USER:", req.user);
+
     const { product, quantity } = req.body;
 
     if (!product) {
@@ -18,9 +21,13 @@ const addToCart = async (req, res) => {
       product,
     });
 
+    console.log("EXISTING:", existingItem);
+
     if (existingItem) {
       existingItem.quantity += quantity || 1;
       await existingItem.save();
+
+      console.log("UPDATED:", existingItem);
 
       return res.status(200).json({
         success: true,
@@ -35,6 +42,8 @@ const addToCart = async (req, res) => {
       quantity: quantity || 1,
     });
 
+    console.log("CART SAVED:", cart);
+
     res.status(201).json({
       success: true,
       message: "Product Added To Cart",
@@ -42,6 +51,8 @@ const addToCart = async (req, res) => {
     });
 
   } catch (error) {
+    console.log("ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -66,6 +77,8 @@ const getCart = async (req, res) => {
     });
 
   } catch (error) {
+    console.log("ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -83,7 +96,7 @@ const updateCartQuantity = async (req, res) => {
       req.params.id,
       { quantity },
       {
-        returnDocument: "after",
+        new: true,
         runValidators: true,
       }
     );
@@ -102,6 +115,8 @@ const updateCartQuantity = async (req, res) => {
     });
 
   } catch (error) {
+    console.log("ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -128,6 +143,8 @@ const removeCartItem = async (req, res) => {
     });
 
   } catch (error) {
+    console.log("ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -149,6 +166,8 @@ const clearCart = async (req, res) => {
     });
 
   } catch (error) {
+    console.log("ERROR:", error);
+
     res.status(500).json({
       success: false,
       message: error.message,

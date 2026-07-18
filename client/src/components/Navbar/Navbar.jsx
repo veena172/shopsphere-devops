@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   FaShoppingCart,
@@ -9,15 +9,29 @@ import {
 } from "react-icons/fa";
 
 import { useSelector } from "react-redux";
+import API from "../../api/api";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const cartItems = useSelector((state) => state.cart.cartItems);
+  const [cartCount, setCartCount] = useState(0);
 
   const wishlistItems = useSelector(
     (state) => state.wishlist.wishlistItems
   );
+
+  useEffect(() => {
+    fetchCartCount();
+  }, []);
+
+  const fetchCartCount = async () => {
+    try {
+      const { data } = await API.get("/cart");
+      setCartCount(data.count || 0);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <nav className="bg-white shadow-md sticky top-0 z-50">
@@ -71,9 +85,9 @@ function Navbar() {
 
             <FaShoppingCart />
 
-            {cartItems.length > 0 && (
+            {cartCount > 0 && (
               <span className="absolute -top-3 -right-3 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                {cartItems.length}
+                {cartCount}
               </span>
             )}
 
@@ -141,7 +155,7 @@ function Navbar() {
               to="/cart"
               onClick={() => setMenuOpen(false)}
             >
-              🛒 Cart ({cartItems.length})
+              🛒 Cart ({cartCount})
             </Link>
 
             <Link

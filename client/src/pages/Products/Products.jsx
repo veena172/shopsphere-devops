@@ -1,15 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import SearchBar from "../../components/SearchBar/SearchBar";
 import SortDropdown from "../../components/SortDropdown/SortDropdown";
 import ProductFilter from "../../components/ProductFilter/ProductFilter";
 import ProductGrid from "../../components/ProductGrid/ProductGrid";
-import products from "../../data/products";
+import API from "../../api/api";
 
 function Products() {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [sortOption, setSortOption] = useState("default");
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const { data } = await API.get("/products");
+
+      setProducts(data.products);
+    } catch (error) {
+      console.log(error);
+      alert("Failed to fetch products");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   let filteredProducts = products.filter((product) => {
     const matchesSearch = product.name
@@ -71,10 +91,14 @@ function Products() {
             />
           </div>
 
-          {/* Products */}
-          <ProductGrid
-            products={filteredProducts}
-          />
+          {/* Loading */}
+          {loading ? (
+            <h2 className="text-center text-xl font-semibold">
+              Loading Products...
+            </h2>
+          ) : (
+            <ProductGrid products={filteredProducts} />
+          )}
 
         </div>
       </section>

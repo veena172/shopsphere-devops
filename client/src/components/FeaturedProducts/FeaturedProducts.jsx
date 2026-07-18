@@ -1,7 +1,25 @@
+import { useEffect, useState } from "react";
 import ProductCard from "../ProductCard/ProductCard";
-import products from "../../data/products";
+import API from "../../api/api";
 
 function FeaturedProducts() {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const { data } = await API.get("/products");
+
+      // Sirf first 4 products show karenge
+      setProducts(data.products.slice(0, 4));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <section className="py-14 md:py-20 bg-slate-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
@@ -24,7 +42,7 @@ function FeaturedProducts() {
 
           {products.map((product) => (
             <ProductCard
-              key={product.id}
+              key={product._id}
               product={product}
             />
           ))}

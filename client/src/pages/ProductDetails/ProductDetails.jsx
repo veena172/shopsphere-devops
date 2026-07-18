@@ -1,66 +1,93 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar/Navbar";
-import products from "../../data/products";
+import API from "../../api/api";
+import toast from "react-hot-toast";
 
 import {
   FaStar,
   FaShoppingCart,
   FaHeart,
-  FaRegHeart,
 } from "react-icons/fa";
-
-import { useDispatch, useSelector } from "react-redux";
-import toast from "react-hot-toast";
-
-import { addToCart } from "../../features/cart/cartSlice";
-
-import {
-  addToWishlist,
-  removeFromWishlist,
-} from "../../features/wishlist/wishlistSlice";
 
 function ProductDetails() {
   const { id } = useParams();
 
-  const dispatch = useDispatch();
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const wishlistItems = useSelector(
-    (state) => state.wishlist.wishlistItems
-  );
+  useEffect(() => {
+    fetchProduct();
+  }, []);
 
-  const product = products.find(
-    (item) => item.id === Number(id)
-  );
+  const fetchProduct = async () => {
+    try {
+      const { data } = await API.get(`/products/${id}`);
+      setProduct(data.product);
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to load product");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  if (!product) {
+  // ================= ADD TO CART =================
+
+  const handleAddToCart = async () => {
+    try {
+      await API.post("/cart", {
+        product: product._id,
+        quantity: 1,
+      });
+
+      toast.success("Product Added To Cart 🛒");
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error.response?.data?.message || "Failed to add to cart"
+      );
+    }
+  };
+
+  // ================= ADD TO WISHLIST =================
+
+  const handleWishlist = async () => {
+    try {
+      await API.post("/wishlist", {
+        product: product._id,
+      });
+
+      toast.success("Added To Wishlist ❤️");
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error.response?.data?.message || "Failed to add to wishlist"
+      );
+    }
+  };
+
+  if (loading) {
     return (
       <>
         <Navbar />
-        <h1 className="text-center text-4xl mt-20">
-          Product Not Found
+        <h1 className="text-center text-3xl mt-20">
+          Loading...
         </h1>
       </>
     );
   }
 
-  const isWishlisted = wishlistItems.some(
-    (item) => item.id === product.id
-  );
-
-  const handleAddToCart = () => {
-    dispatch(addToCart(product));
-    toast.success(`${product.name} added to cart 🛒`);
-  };
-
-  const handleWishlist = () => {
-    if (isWishlisted) {
-      dispatch(removeFromWishlist(product.id));
-      toast.success("Removed from Wishlist 💔");
-    } else {
-      dispatch(addToWishlist(product));
-      toast.success("Added to Wishlist ❤️");
-    }
-  };
+  if (!product) {
+    return (
+      <>
+        <Navbar />
+        <h1 className="text-center text-3xl mt-20">
+          Product Not Found
+        </h1>
+      </>
+    );
+  }
 
   return (
     <>
@@ -93,9 +120,7 @@ function ProductDetails() {
 
               <div className="flex items-center gap-2 text-yellow-500 mt-5">
                 <FaStar />
-                <span className="text-lg">
-                  {product.rating}
-                </span>
+                <span className="text-lg">4.8</span>
               </div>
 
               <h2 className="text-4xl font-bold text-blue-600 mt-6">
@@ -103,9 +128,11 @@ function ProductDetails() {
               </h2>
 
               <p className="text-gray-600 mt-6 leading-8">
-                Premium quality fashion product designed with
-                comfort, style and durability. Perfect for daily
-                wear and special occasions.
+                {product.description}
+              </p>
+
+              <p className="mt-4 text-lg font-semibold">
+                Stock : {product.stock}
               </p>
 
               <div className="flex gap-5 mt-8">
@@ -122,12 +149,7 @@ function ProductDetails() {
                   onClick={handleWishlist}
                   className="bg-red-500 hover:bg-red-600 text-white px-8 py-4 rounded-xl flex items-center gap-2 transition"
                 >
-                  {isWishlisted ? (
-                    <FaHeart />
-                  ) : (
-                    <FaRegHeart />
-                  )}
-
+                  <FaHeart />
                   Wishlist
                 </button>
 

@@ -9,8 +9,8 @@ import {
 
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import API from "../../api/api";
 
-import { addToCart } from "../../features/cart/cartSlice";
 import {
   addToWishlist,
   removeFromWishlist,
@@ -24,17 +24,28 @@ function ProductCard({ product }) {
   );
 
   const isWishlisted = wishlistItems.some(
-    (item) => item.id === product.id
+    (item) => item._id === product._id
   );
 
-  const handleAddToCart = () => {
-    dispatch(addToCart(product));
-    toast.success(`${product.name} added to cart 🛒`);
+  const handleAddToCart = async () => {
+    try {
+      await API.post("/cart", {
+        product: product._id,
+        quantity: 1,
+      });
+
+      toast.success(`${product.name} added to cart 🛒`);
+    } catch (error) {
+      console.log(error);
+      toast.error(
+        error.response?.data?.message || "Failed to add to cart"
+      );
+    }
   };
 
   const handleWishlist = () => {
     if (isWishlisted) {
-      dispatch(removeFromWishlist(product.id));
+      dispatch(removeFromWishlist(product._id));
       toast.success("Removed from Wishlist 💔");
     } else {
       dispatch(addToWishlist(product));
@@ -48,7 +59,7 @@ function ProductCard({ product }) {
       {/* Product Image */}
       <div className="relative overflow-hidden">
 
-        <Link to={`/product/${product.id}`}>
+        <Link to={`/product/${product._id}`}>
           <img
             src={product.image}
             alt={product.name}
@@ -78,7 +89,7 @@ function ProductCard({ product }) {
       {/* Product Details */}
       <div className="p-5">
 
-        <Link to={`/product/${product.id}`}>
+        <Link to={`/product/${product._id}`}>
           <h3 className="text-xl font-semibold hover:text-blue-600 transition">
             {product.name}
           </h3>
@@ -92,7 +103,7 @@ function ProductCard({ product }) {
 
           <div className="flex items-center gap-1 text-yellow-500">
             <FaStar />
-            <span>{product.rating}</span>
+            <span>4.8</span>
           </div>
 
         </div>
