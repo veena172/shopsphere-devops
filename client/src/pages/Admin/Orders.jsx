@@ -91,7 +91,7 @@ function Orders() {
                       </td>
 
                       <td className="p-3 text-center">
-                        ₹{order.totalAmount}
+                        ₹{order.totalAmount.toLocaleString("en-IN")}
                       </td>
 
                       <td className="p-3 text-center">
